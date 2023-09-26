@@ -1,82 +1,32 @@
 #include "lib.hpp"
 
-[[nodiscard]] int factorial (const int& num)
-{
-    if (num == 0)
-    {   return 1;   }
-
-    int factorial = 1;
-
-    for (size_t i = 1; i <= num; ++i)
-    {   factorial *= i;   }
-
-    return factorial;
-}
-
-template<int num>
-struct fact
-{
-    static const int value = num * fact<num - 1>::value;
-};
-
-template<>
-struct fact<0>
-{
-    static const int value = 1;
-};
 
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[])
 {
-    uint8_t cnt = 10;
 
-    //    - создание экземпляра std::map<int, int>
-    std::map<int, int> test_0;
+//    1. Адрес может быть представлен в виде произвольного целочисленного типа. Выводить
+//    побайтово в беззнаковом виде, начиная со старшего байта, с символом ` . ` (символ точки)
+//    в качестве разделителя. Выводятся все байты числа.
+//    2. Адрес может быть представлен в виде строки. Выводится как есть, вне зависимости от
+//    содержимого.
+//    3. Адрес может быть представлен в виде контейнеров ` std::list `, ` std::vector `.
+//    Выводится полное содержимое контейнера поэлементно и разделяется `.` (символом
+//    точка). Элементы выводятся как есть.
+//    4. Опционально адрес может быть представлен в виде ` std::tuple ` при условии, что все
+//    типы одинаковы. Выводится полное содержимое поэлементно и разделяется `.` (одним
+//    символом точка). Элементы выводятся как есть. В случа
 
-    //    - заполнение 10 элементами, где ключ - это число от 0 до 9, а значение - факториал ключа
-    while (cnt-- > 0)
-    {
-        test_0[cnt] = factorial(cnt);
-    }
+    std::cout << off<4>::b << off<4>::value;
 
-    //    - вывод на экран всех значений (ключ и значение разделены пробелом) хранящихся в контейнере
-    for (const auto& item : test_0)
-    {   std::cout << item.first << " " << item.second << "\n";  }
-
-
-
-
-    //    - создание экземпляра std::map<int, int>
-    std::map<int, int, std::less<int>, Allocator<std::pair<const int, int> >> test_1;
-
-    //    - заполнение 10 элементами, где ключ - это число от 0 до 9, а значение - факториал ключа
-    cnt = 10;
-    while (cnt-- > 0)
-    {
-        test_1[cnt] = factorial(cnt);
-    }
-
-    //    - вывод на экран всех значений (ключ и значение разделены пробелом) хранящихся в контейнере
-    for (const auto& item : test_1)
-    {   std::cout << item.first << " " << item.second << "\n";  }
-
-
-
-
-
-    //    - создание экземпляра своего контейнера для хранения значений типа int
-    better_container<int, std::less<int>, Allocator<int>> test_3;
-
-    //    - заполнение 10 элементами от 0 до 9
-    cnt = 10;
-    while (cnt-- > 0)
-    {
-        test_3.push_back(factorial(cnt));
-    }
-
-    //    - вывод на экран всех значений хранящихся в контейнере
-    test_3.printAllElems(); // ERROR...
-
+//    print_ip(int8_t{-1} ); // 255
+//    print_ip(int16_t{0} ); // 0.0
+//    print_ip(int32_t{2130706433} ); // 127.0.0.1
+//    print_ip(int64_t{8875824491850138409} );// 123.45.67.89.101.112.131.41
+//    print_ip(std::string{"Hello, World!"} ); // Hello, World!
+//    print_ip(std::vector<int>{100, 200, 300, 400} ); // 100.200.300.400
+//    print_ip(std::list<shot>{400, 300, 200, 100} ); // 400.300.200.
+//    print_ip(std::make_tuple(123, 456, 789, 0) ); // 123.456.789.0
 
 
     return 0;

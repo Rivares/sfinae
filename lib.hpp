@@ -13,8 +13,9 @@
 #include <set>
 #include <map>
 
-
-// Generator code
+/// <summary>
+/// Generator code
+/// </summary>
 template <int v>
 struct off
 {
@@ -30,6 +31,9 @@ struct off
 
 //---------
 
+/// <summary>
+/// Example of recurive templates
+/// </summary>
 template <int num>
 struct fact
 {
@@ -47,6 +51,9 @@ struct fact<0>
 
 //---------
 
+/// <summary>
+/// Example of remove const cvalificator
+/// </summary>
 template <typename T>
 struct remove_const
 {
@@ -62,8 +69,12 @@ struct remove_const<const U>
 // remove_const<int>::type a1;
 // remove_const<const int>::type a2;
 
+
 //---------
 
+/// <summary>
+/// Example of defination types
+/// </summary>
 template <typename T>
 struct is_int
 {
@@ -90,7 +101,9 @@ struct is_int<int>
 
 ////---------
 
-//// ? SFINAE
+/// <summary>
+/// Example of SFINAE
+/// </summary>
 //template <bool cond, class T>
 //struct enable_if: type_is<T> {};
 
@@ -113,8 +126,123 @@ struct is_int<int>
 //    типы одинаковы. Выводится полное содержимое поэлементно и разделяется `.` (одним
 //    символом точка). Элементы выводятся как есть. В случа
 
-//template <typename T>
-//struct print_ip
-//{
-//    static const
-//};
+/// <summary>
+/// Example of defination types
+/// </summary>
+template <typename T>
+struct is_int8
+{
+    static const bool result = false;
+};
+
+template <>
+struct is_int8<int8_t>
+{
+    static const bool result = true;
+};
+
+
+template <typename T>
+struct is_int16
+{
+    static const bool result = false;
+};
+
+template <>
+struct is_int16<int16_t>
+{
+    static const bool result = true;
+};
+
+template <typename T>
+struct is_int32
+{
+    static const bool result = false;
+};
+
+template <>
+struct is_int32<int32_t>
+{
+    static const bool result = true;
+};
+
+/// <summary>
+/// Example of implenetaion function for print ip address
+/// </summary>
+/// /// <param name="value">Input value.</param>
+template <typename T>
+void print_ip(T value)
+{
+    auto ipMax = +std::numeric_limits<std::uint8_t>::max();
+    auto ipMin = +std::numeric_limits<std::uint8_t>::min();
+
+    if (is_int8<T>::result)
+    {
+        if (value < 0)
+        {   std::cout << ipMax << "\n"; }
+        else if (value == 0)
+        {   std::cout << ipMin << "\n"; }
+        else
+        {   std::cout << value << "\n"; }
+    }
+    else if (is_int16<T>::result)
+    {
+        if (value < 0)
+        {
+            std::cout << ipMax << "."
+                      << ipMax << "\n";
+        }
+        else if (value == 0)
+        {
+            std::cout << ipMin << "."
+                      << ipMin << "\n";
+        }
+        else
+        {
+            std::cout << ( value * ipMax ) / (+std::numeric_limits<T>::max()) << "."
+                      << ( value * ipMax ) / (+std::numeric_limits<T>::max()) << "\n";
+        }
+    }
+    else if (is_int32<T>::result)
+    {
+        if (value < 0)
+        {
+            std::cout << ipMax << "."
+                      << ipMax << "\n";
+        }
+        else if (value == 0)
+        {
+            std::cout << ipMin << "."
+                      << ipMin << "\n";
+        }
+        else
+        {
+            std::cout << ( value * ipMax )  << "."
+                      << ( value * ipMax ) / (+std::numeric_limits<T>::max()) << "\n";
+        }
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

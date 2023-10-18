@@ -13,14 +13,14 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[])
 
     print_ip(int8_t{0} ); // 0
 
-    print_ip(int8_t{56} ); // 8
+    print_ip(int8_t{56} ); // 56
 
 //    print_ip(int8_t{546} ); // FAIL
 
 
     print_ip(int16_t{0} ); // 0.0
 
-    print_ip(int16_t{4567} ); // 0.0
+    print_ip(int16_t{4567} ); // 17.215
     print_ip(int32_t{2130706433} ); // 127.0.0.1
     print_ip(int64_t{8875824491850138409} );// 123.45.67.89.101.112.131.41
 

@@ -193,12 +193,15 @@ void print_ip(T value)
             || (is_int64<T>::result)
         )
     {
-        auto* begin = reinterpret_cast<uint8_t*>(&value);
-        auto* end = begin + sizeof(T);
+        auto* begin = reinterpret_cast<uint8_t*>(&value) + sizeof(T) - 1;
+        auto* end = begin - sizeof(T);
 
-        for (auto* byte = begin; byte < end; ++byte)//: std::ranges::subrange{begin, end} | std::views::reverse)
+        for (auto* byte = begin; byte > end; --byte)//: std::ranges::subrange{begin, end} | std::views::reverse)
         {
-            std::cout << static_cast<int>(*byte) << ".";
+            std::cout << static_cast<int>(*byte);
+
+            if ((byte - 1) > end)
+            {   std::cout << '.';  }
         };
     }
 

@@ -178,6 +178,31 @@ struct is_int64<int64_t>
     static const bool result = true;
 };
 
+template <typename T>
+struct is_string
+{
+    static const bool result = false;
+};
+
+template <>
+struct is_string<std::string>
+{
+    static const bool result = true;
+};
+
+
+template <typename T>
+struct is_vector
+{
+    static const bool result = false;
+};
+
+template <>
+struct is_vector<std::vector>
+{
+    static const bool result = true;
+};
+
 /// <summary>
 /// Example of implenetaion function for print ip address
 /// </summary>
@@ -203,6 +228,18 @@ void print_ip(T value)
             if ((byte - 1) > end)
             {   std::cout << '.';  }
         };
+    }
+    else if (is_string<T>::result)
+    {   std::cout << value; }
+    else if (is_vector<T>::result)
+    {
+        for (auto it = value.begin(); it != value.end(); ++it)
+        {
+            std::cout << (*it);
+
+            if ((it + 1) != value.end())
+            {   std::cout << '.';  }
+        }
     }
 
 

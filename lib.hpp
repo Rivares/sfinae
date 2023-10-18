@@ -166,6 +166,18 @@ struct is_int32<int32_t>
     static const bool result = true;
 };
 
+template <typename T>
+struct is_int64
+{
+    static const bool result = false;
+};
+
+template <>
+struct is_int64<int64_t>
+{
+    static const bool result = true;
+};
+
 /// <summary>
 /// Example of implenetaion function for print ip address
 /// </summary>
@@ -173,55 +185,25 @@ struct is_int32<int32_t>
 template <typename T>
 void print_ip(T value)
 {
-    auto ipMax = +std::numeric_limits<std::uint8_t>::max();
-    auto ipMin = +std::numeric_limits<std::uint8_t>::min();
 
-    if (is_int8<T>::result)
+    if (
+            (is_int8<T>::result)
+            || (is_int16<T>::result)
+            || (is_int32<T>::result)
+            || (is_int64<T>::result)
+        )
     {
-        if (value < 0)
-        {   std::cout << ipMax << "\n"; }
-        else if (value == 0)
-        {   std::cout << ipMin << "\n"; }
-        else
-        {   std::cout << value << "\n"; }
-    }
-    else if (is_int16<T>::result)
-    {
-        if (value < 0)
+        auto* begin = reinterpret_cast<uint8_t*>(&value);
+        auto* end = begin + sizeof(T);
+
+        for (auto* byte = begin; byte < end; ++byte)//: std::ranges::subrange{begin, end} | std::views::reverse)
         {
-            std::cout << ipMax << "."
-                      << ipMax << "\n";
-        }
-        else if (value == 0)
-        {
-            std::cout << ipMin << "."
-                      << ipMin << "\n";
-        }
-        else
-        {
-            std::cout << ( value * ipMax ) / (+std::numeric_limits<T>::max()) << "."
-                      << ( value * ipMax ) / (+std::numeric_limits<T>::max()) << "\n";
-        }
-    }
-    else if (is_int32<T>::result)
-    {
-        if (value < 0)
-        {
-            std::cout << ipMax << "."
-                      << ipMax << "\n";
-        }
-        else if (value == 0)
-        {
-            std::cout << ipMin << "."
-                      << ipMin << "\n";
-        }
-        else
-        {
-            std::cout << ( value * ipMax )  << "."
-                      << ( value * ipMax ) / (+std::numeric_limits<T>::max()) << "\n";
-        }
+            std::cout << static_cast<int>(*byte) << ".";
+        };
     }
 
+
+    std::cout << '\n';
 }
 
 

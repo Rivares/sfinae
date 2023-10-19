@@ -9,7 +9,9 @@
 #include <limits>
 #include <string>
 #include <vector>
+#include <tuple>
 #include <deque>
+#include <list>
 #include <set>
 #include <map>
 
@@ -92,25 +94,48 @@ struct is_int<int>
 
 //---------
 
-//// ?
-//template <bool cond, class T, class F>
-//struct cond : type_is<T>{};
 
-//template <class T, class F>
-//struct cond <false, T, F> : type_is<F>{};
 
 ////---------
 
 /// <summary>
 /// Example of SFINAE
 /// </summary>
-//template <bool cond, class T>
-//struct enable_if: type_is<T> {};
 
-//template <class T>
-//struct enable_if<false, T> {};
+// std::enable_if (как и std::is_same)
 
-//enable_if<false, int>::type;
+template<bool condition, typename Type>
+struct EnableIf;
+
+template<typename Type>
+struct EnableIf<true, Type>
+{
+    using type = Type;
+};
+
+template<typename T, typename U>
+struct IsSame
+{
+    static constexpr bool value = false;
+};
+
+template<typename T>
+struct IsSame<T, T>
+{
+    static constexpr bool value = true;
+};
+
+
+
+template <typename T>
+typename EnableIf<!IsSame<T, int>::value, void>::type
+printContainer(T container)
+{
+    std::cout << "Values:{ ";
+    for(auto value : container)
+        std::cout << value << " ";
+    std::cout << "}\n";
+}
 
 //---------
 
@@ -182,6 +207,50 @@ struct is_string<std::string>
 };
 
 
+
+/// <summary>
+/// Defination for std::string
+/// </summary>
+
+//template <typename T>
+//struct is_vector
+//{
+//    static const bool result = false;
+//};
+
+//template <>
+//struct is_vector<std::vector>
+//{
+//    static const bool result = true;
+//};
+
+template <typename T>
+struct is_container: std::false_type {};
+
+// partial specializations for vector
+template <typename T, typename Alloc>
+struct is_container<std::vector<T, Alloc>>: std::true_type {};
+
+// partial specializations for list
+template <typename T, typename Alloc>
+struct is_container<std::list<T, Alloc>>: std::true_type {};
+
+// partial specializations for tuple
+template <typename T, typename Alloc>
+struct is_container<std::tuple<T, Alloc>>: std::true_type {};
+
+template <class Container, class = std::enable_if_t<is_container<Container>::value>>
+std::ostream& operator<<(std::ostream& os, const Container& container)
+{
+    if (!container.empty())
+    {
+        std::cout << *container.begin();
+        std::for_each(std::next(container.begin()), container.end(), [] (auto& value) {
+            std::cout << "." << value;
+        });
+    }
+    return os;
+}
 /// <summary>
 /// Example of implenetaion function for print ip address
 /// </summary>
@@ -189,8 +258,7 @@ struct is_string<std::string>
 template <typename T>
 void print_ip(T value)
 {
-
-    if (is_integer<T>::result)
+    if (is_integer<T>::result) // or std::is_integral<T>::value
     {
         auto* begin = reinterpret_cast<uint8_t*>(&value) + sizeof(T) - 1;
         auto* end = begin - sizeof(T);
@@ -205,16 +273,10 @@ void print_ip(T value)
     }
     else if (is_string<T>::result)
     {   std::cout << value; }
-//    else if (is_vector<T>::result)
-//    {
-//        for (auto it = value.begin(); it != value.end(); ++it)
-//        {
-//            std::cout << (*it);
-
-//            if ((it + 1) != value.end())
-//            {   std::cout << '.';  }
-//        }
-//    }
+    else if (is_container<T>::value)
+    {
+        std::cout << value;
+    }
 
 
     std::cout << '\n';

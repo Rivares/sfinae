@@ -126,57 +126,48 @@ struct is_int<int>
 //    типы одинаковы. Выводится полное содержимое поэлементно и разделяется `.` (одним
 //    символом точка). Элементы выводятся как есть. В случа
 
+
+
+
 /// <summary>
-/// Example of defination types
+/// Deefination for integer
 /// </summary>
 template <typename T>
-struct is_int8
+struct is_integer
 {
     static const bool result = false;
 };
 
 template <>
-struct is_int8<int8_t>
+struct is_integer<int8_t>
 {
     static const bool result = true;
-};
-
-
-template <typename T>
-struct is_int16
-{
-    static const bool result = false;
 };
 
 template <>
-struct is_int16<int16_t>
+struct is_integer<int16_t>
 {
     static const bool result = true;
-};
-
-template <typename T>
-struct is_int32
-{
-    static const bool result = false;
 };
 
 template <>
-struct is_int32<int32_t>
+struct is_integer<int32_t>
 {
     static const bool result = true;
-};
-
-template <typename T>
-struct is_int64
-{
-    static const bool result = false;
 };
 
 template <>
-struct is_int64<int64_t>
+struct is_integer<int64_t>
 {
     static const bool result = true;
 };
+
+
+
+
+/// <summary>
+/// Defination for std::string
+/// </summary>
 
 template <typename T>
 struct is_string
@@ -191,18 +182,6 @@ struct is_string<std::string>
 };
 
 
-template <typename T>
-struct is_vector
-{
-    static const bool result = false;
-};
-
-template <>
-struct is_vector<std::vector>
-{
-    static const bool result = true;
-};
-
 /// <summary>
 /// Example of implenetaion function for print ip address
 /// </summary>
@@ -211,12 +190,7 @@ template <typename T>
 void print_ip(T value)
 {
 
-    if (
-            (is_int8<T>::result)
-            || (is_int16<T>::result)
-            || (is_int32<T>::result)
-            || (is_int64<T>::result)
-        )
+    if (is_integer<T>::result)
     {
         auto* begin = reinterpret_cast<uint8_t*>(&value) + sizeof(T) - 1;
         auto* end = begin - sizeof(T);
@@ -231,16 +205,16 @@ void print_ip(T value)
     }
     else if (is_string<T>::result)
     {   std::cout << value; }
-    else if (is_vector<T>::result)
-    {
-        for (auto it = value.begin(); it != value.end(); ++it)
-        {
-            std::cout << (*it);
+//    else if (is_vector<T>::result)
+//    {
+//        for (auto it = value.begin(); it != value.end(); ++it)
+//        {
+//            std::cout << (*it);
 
-            if ((it + 1) != value.end())
-            {   std::cout << '.';  }
-        }
-    }
+//            if ((it + 1) != value.end())
+//            {   std::cout << '.';  }
+//        }
+//    }
 
 
     std::cout << '\n';

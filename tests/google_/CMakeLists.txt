@@ -9,7 +9,7 @@ set(SOURCES
 
 add_executable(${package_name} ${SOURCES})
 
-set_target_properties(sfinae PROPERTIES
+set_target_properties(print_ip PROPERTIES
     CXX_STANDARD 17
     CXX_STANDARD_REQUIRED ON
 )

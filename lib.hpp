@@ -139,18 +139,6 @@ printContainer(T container)
 
 //---------
 
-//    1. Адрес может быть представлен в виде произвольного целочисленного типа. Выводить
-//    побайтово в беззнаковом виде, начиная со старшего байта, с символом ` . ` (символ точки)
-//    в качестве разделителя. Выводятся все байты числа.
-//    2. Адрес может быть представлен в виде строки. Выводится как есть, вне зависимости от
-//    содержимого.
-//    3. Адрес может быть представлен в виде контейнеров ` std::list `, ` std::vector `.
-//    Выводится полное содержимое контейнера поэлементно и разделяется `.` (символом
-//    точка). Элементы выводятся как есть.
-//    4. Опционально адрес может быть представлен в виде ` std::tuple ` при условии, что все
-//    типы одинаковы. Выводится полное содержимое поэлементно и разделяется `.` (одним
-//    символом точка). Элементы выводятся как есть. В случа
-
 
 
 
@@ -235,22 +223,57 @@ struct is_container<std::vector<T, Alloc>>: std::true_type {};
 template <typename T, typename Alloc>
 struct is_container<std::list<T, Alloc>>: std::true_type {};
 
-// partial specializations for tuple
-template <typename T, typename Alloc>
-struct is_container<std::tuple<T, Alloc>>: std::true_type {};
+//// partial specializations for tuple
+//template <typename T, typename Alloc>
+//struct is_container<std::tuple<T, Alloc>>: std::true_type {};
 
-template <class Container, class = std::enable_if_t<is_container<Container>::value>>
+// partial specializations for tuple
+template <>
+struct is_container<std::tuple<int, int, int, int>>: std::true_type {};
+
+
+
+/// <summary>
+/// Example of implenetaion function for print from tuple
+/// </summary>
+/// /// <param name="value">Input value.</param>
+template<class Container, typename... Args>
+void printer(const Container& container, Args ... args)
+{
+    (std::cout << ... << std::get<args>(container)) << '\n';
+}
+
+template <class Container, class T = std::enable_if_t<is_container<Container>::value>>
 std::ostream& operator<<(std::ostream& os, const Container& container)
 {
-    if (!container.empty())
+    if constexpr (not std::is_same_v<Container, std::tuple<int, int, int, int>>)
     {
-        std::cout << *container.begin();
-        std::for_each(std::next(container.begin()), container.end(), [] (auto& value) {
-            std::cout << "." << value;
-        });
+        if (!container.empty())
+        {
+            std::cout << *container.begin();
+            std::for_each(std::next(container.begin()), container.end(), [] (auto& value) {
+                std::cout << "." << value;
+                });
+        }
     }
+    else
+    {
+        if (std::tuple_size_v<Container> > 0)
+        {
+            printer(container);
+            std::cout << std::get<0>(container);
+            std::cout << "." << std::get<1>(container);
+            std::cout << "." << std::get<2>(container);
+            std::cout << "." << std::get<3>(container);
+        }
+    }
+
     return os;
 }
+
+
+
+
 /// <summary>
 /// Example of implenetaion function for print ip address
 /// </summary>

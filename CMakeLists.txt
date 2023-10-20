@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
 
 
-set(PROJECT_NAME "sfinae")
+set(PROJECT_NAME "print_ip")
 
 project(${PROJECT_NAME} LANGUAGES CXX)
 set(PATCH_VERSION "68" CACHE INTERNAL "Patch version")

@@ -92,7 +92,7 @@ jobs:
         shell: bash
 
       - name: Create .nojekyll
-        run: touch ${{ inputs.folder }}/.nojekyll
+        run: sudo touch ${{ inputs.folder }}/.nojekyll
         shell: bash
 
       # Build the HTML documentation

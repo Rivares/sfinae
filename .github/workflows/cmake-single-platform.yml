@@ -104,7 +104,7 @@ jobs:
       
       # Deploy the HTML documentation to GitHub Pages
       - name: GH Pages Deployment
-        uses: Rivares/doxygen-github-pages-action@v3
+        uses: actions/checkout@v2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./doc/html/

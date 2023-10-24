@@ -137,81 +137,83 @@ printContainer(T container)
     std::cout << "}\n";
 }
 
-//---------
+
+
+// ------------------------------------------------------------------------------------------------------------
+
+// ----------------------------- TASK -------------------------------
 
 
 
+
+
+
+// --------------------------- INTEGER ------------------------------
 
 /// <summary>
-/// Deefination for integer
+/// Example of implementation function for print ip address
 /// </summary>
+/// /// <param name="value">INTEGER</param>
 template <typename T>
-struct is_integer
+std::enable_if_t<std::is_integral<T>::value> print_ip(T value)
 {
-    static const bool result = false;
-};
+    auto* begin = reinterpret_cast<uint8_t*>(&value) + sizeof(T) - 1;
+    auto* end = begin - sizeof(T);
 
-template <>
-struct is_integer<int8_t>
-{
-    static const bool result = true;
-};
+    for (auto* byte = begin; byte > end; --byte)//: std::ranges::subrange{begin, end} | std::views::reverse)
+    {
+        std::cout << static_cast<int>(*byte);
 
-template <>
-struct is_integer<int16_t>
-{
-    static const bool result = true;
-};
+        if ((byte - 1) > end)
+        {   std::cout << '.';  }
+    };
 
-template <>
-struct is_integer<int32_t>
-{
-    static const bool result = true;
-};
-
-template <>
-struct is_integer<int64_t>
-{
-    static const bool result = true;
-};
+    std::cout << '\n';
+}
 
 
 
+
+// --------------------------- STRING ------------------------------
 
 /// <summary>
-/// Defination for std::string
+/// Definition for std::string
 /// </summary>
 
 template <typename T>
 struct is_string
 {
-    static const bool result = false;
+    static const bool value = false;
 };
 
 template <>
 struct is_string<std::string>
 {
-    static const bool result = true;
+    static const bool value = true;
 };
 
 
+/// <summary>
+/// Example of implementation function for print ip address
+/// </summary>
+/// /// <param name="value">STRING</param>
+template <typename T>
+std::enable_if_t<is_string<T>::value> print_ip(T value)
+{
+    std::cout << value;
+
+    std::cout << '\n';
+}
+
+
+
+
+
+// --------------------------- CONTAINER (SEQUENCE) ------------------------------
 
 /// <summary>
-/// Defination for std::string
+/// Definition for std::string
 /// </summary>
-
-//template <typename T>
-//struct is_vector
-//{
-//    static const bool result = false;
-//};
-
-//template <>
-//struct is_vector<std::vector>
-//{
-//    static const bool result = true;
-//};
-
 template <typename T>
 struct is_container: std::false_type {};
 
@@ -223,84 +225,30 @@ struct is_container<std::vector<T, Alloc>>: std::true_type {};
 template <typename T, typename Alloc>
 struct is_container<std::list<T, Alloc>>: std::true_type {};
 
-//// partial specializations for tuple
-//template <typename T, typename Alloc>
-//struct is_container<std::tuple<T, Alloc>>: std::true_type {};
-
-// partial specializations for tuple
-template <>
-struct is_container<std::tuple<int, int, int, int>>: std::true_type {};
-
-
-
-/// <summary>
-/// Example of implenetaion function for print from tuple
-/// </summary>
-/// /// <param name="value">Input value.</param>
-template<class Container, typename... Args>
-void printer(const Container& container, Args ... args)
-{
-    (std::cout << ... << std::get<args>(container)) << '\n';
-}
 
 template <class Container, class T = std::enable_if_t<is_container<Container>::value>>
 std::ostream& operator<<(std::ostream& os, const Container& container)
 {
-    if constexpr (not std::is_same_v<Container, std::tuple<int, int, int, int>>)
+    if (!container.empty())
     {
-        if (!container.empty())
-        {
-            std::cout << *container.begin();
-            std::for_each(std::next(container.begin()), container.end(), [] (auto& value) {
-                std::cout << "." << value;
-                });
-        }
-    }
-    else
-    {
-        if (std::tuple_size_v<Container> > 0)
-        {
-            printer(container);
-            std::cout << std::get<0>(container);
-            std::cout << "." << std::get<1>(container);
-            std::cout << "." << std::get<2>(container);
-            std::cout << "." << std::get<3>(container);
-        }
+        std::cout << *container.begin();
+        std::for_each(std::next(container.begin()), container.end(), [] (auto& value) {
+            std::cout << "." << value;
+            });
     }
 
     return os;
 }
 
 
-
-
 /// <summary>
-/// Example of implenetaion function for print ip address
+/// Example of implementation function for print ip address
 /// </summary>
-/// /// <param name="value">Input value.</param>
+/// /// <param name="value">CONTAINER</param>
 template <typename T>
-void print_ip(T value)
+std::enable_if_t<is_container<T>::value> print_ip(T value)
 {
-    if (is_integer<T>::result) // or std::is_integral<T>::value
-    {
-        auto* begin = reinterpret_cast<uint8_t*>(&value) + sizeof(T) - 1;
-        auto* end = begin - sizeof(T);
-
-        for (auto* byte = begin; byte > end; --byte)//: std::ranges::subrange{begin, end} | std::views::reverse)
-        {
-            std::cout << static_cast<int>(*byte);
-
-            if ((byte - 1) > end)
-            {   std::cout << '.';  }
-        };
-    }
-    else if (is_string<T>::result)
-    {   std::cout << value; }
-    else if (is_container<T>::value)
-    {
-        std::cout << value;
-    }
-
+    std::cout << value;
 
     std::cout << '\n';
 }
@@ -309,6 +257,77 @@ void print_ip(T value)
 
 
 
+
+// --------------------------- TUPLE ------------------------------
+
+
+
+/// <summary>
+/// Definition for std::tuple
+/// </summary>
+
+
+
+// specializations for initializer_list
+template <typename T>
+struct is_initializer_list: std::false_type {};
+
+// partial specializations for initializer_list
+template <typename T>
+struct is_initializer_list<std::initializer_list<T>>: std::true_type {};
+
+
+
+/// <summary>
+/// Example of implementation function for print ip address
+/// </summary>
+/// /// <param name="value">initializer_list</param>
+template <typename T>
+std::enable_if_t<is_initializer_list<T>::value> print_ip(T container)
+{
+    if (container.size() > 0)
+    {
+        std::cout << *container.begin();
+        std::for_each(std::next(container.begin()), container.end(), [] (auto& value)
+        {
+            std::cout << "." << value;
+        });
+    }
+
+    std::cout << '\n';
+}
+
+
+
+// specializations for tuple
+template <typename T>
+struct is_tuple: std::false_type {};
+
+// partial specializations for tuple
+template <typename T, typename Alloc>
+struct is_tuple<std::tuple<T, Alloc>>: std::true_type {};
+
+
+template <typename T, typename ... Rest>
+inline constexpr bool one_type = (std::is_same_v<T, Rest> && ...);
+
+
+/// <summary>
+/// Example of implementation function for print ip address
+/// </summary>
+/// /// <param name="value">TUPLE</param>
+template <typename TupleT, std::size_t... Is>
+void printTuple(const TupleT& tp, std::index_sequence<Is...>)
+{
+    auto list = {std::get<Is>(tp)...};
+    print_ip(list);
+}
+
+template <typename... Args>
+std::enable_if_t<one_type<Args...>> print_ip(const std::tuple<Args...>& ip)
+{
+    printTuple(ip, std::make_index_sequence<std::tuple_size_v<std::tuple<Args...>>>{});
+}
 
 
 
